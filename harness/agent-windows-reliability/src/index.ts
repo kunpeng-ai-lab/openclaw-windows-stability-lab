@@ -1,0 +1,31 @@
+export { doctorCommand, type DoctorOptions } from "./commands/doctor.js";
+export { smokeCommand, UnknownSmokeTargetError, type SmokeOptions } from "./commands/smoke.js";
+export {
+  AgentWindowsReliabilitySchemas,
+  ArtifactRefSchema,
+  CaseSchema,
+  CheckResultSchema,
+  EvidenceBundleSchema,
+  HarnessResultSchema,
+  HarnessSummarySchema,
+  IssueLinkSchema,
+  ReportSchema,
+  RedactionMetadataSchema,
+  RuntimeProfileSchema,
+  SectionResultSchema,
+  VersionMatrixEntrySchema,
+  VersionMatrixSchema,
+  summarizeReport,
+  type ArtifactRef,
+  type CaseSchema as CaseSchemaType,
+  type EvidenceBundle,
+  type EvidenceVisibility,
+  type HarnessResult,
+  type HarnessSummary,
+  type IssueLink,
+  type RedactionMetadata,
+  type RuntimeProfile,
+  type VersionMatrix,
+  type VersionMatrixEntry,
+} from "./schemas.js";
+export type { CheckResult, CheckStatus, Report, SectionResult } from "./utils/output.js";

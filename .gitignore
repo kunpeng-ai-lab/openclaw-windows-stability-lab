@@ -1,0 +1,12 @@
+reports/*.log
+reports/*.zip
+reports/*secrets*
+*.local.*
+*.secret.*
+node_modules/
+dist/
+coverage/
+.turbo/
+.cache/
+.env
+.env.*

@@ -1,0 +1,42 @@
+{
+  "name": "agent-windows-reliability",
+  "version": "0.1.0",
+  "description": "Windows reliability harness for AI Agent runtimes",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "profiles",
+    "README.md",
+    "LOCAL_LINK.md"
+  ],
+  "bin": {
+    "agent-win": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "dev": "tsx src/cli.ts",
+    "doctor": "tsx src/cli.ts doctor --profile openclaw",
+    "smoke": "tsx src/cli.ts smoke gateway --profile openclaw"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./schemas": {
+      "types": "./dist/schemas.d.ts",
+      "import": "./dist/schemas.js"
+    }
+  },
+  "dependencies": {
+    "commander": "^12.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "tsx": "^4.7.0",
+    "@types/node": "^20.0.0"
+  }
+}

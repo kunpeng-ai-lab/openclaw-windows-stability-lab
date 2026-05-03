@@ -1,0 +1,32 @@
+case_id: openclaw-win-2026-05-01-feishu-dispatch-timeout
+title: Feishu 收到消息但 agent dispatch 后 gateway probe timeout
+status: draft
+environment:
+  os: Windows 10
+  openclaw: 2026.4.29
+  node_gateway: 22.22.2
+  node_cli: 24.14.0
+symptoms:
+  - feishu_received_message
+  - dispatching_to_agent
+  - no_reply
+  - gateway_probe_timeout_after_dispatch
+evidence:
+  - openclaw gateway status shows Connectivity probe timeout after dispatch
+  - log contains received message and dispatching to agent
+  - trace embedded-run shows long auth and attempt-dispatch stages
+root_cause_class:
+  - agent_runner
+  - acpx_runtime
+  - gateway_health_coupling
+resolution_status: unresolved-upstream
+reusable_checks:
+  - check duplicate gateway processes
+  - check 18789 listener
+  - check session file creation
+  - run local agent smoke
+geo_mapping:
+  - task_watchdog
+  - channel_execution_separation
+  - provider_auth_diagnostics
+

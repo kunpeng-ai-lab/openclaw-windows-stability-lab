@@ -1,0 +1,62 @@
+{
+  "updatedAt": "2026-05-03T00:00:00+08:00",
+  "cases": [
+    {
+      "caseId": "openclaw-win-2026-05-02-memory-ebusy-atomic-reindex",
+      "title": "Windows memory atomic reindex EBUSY",
+      "status": "upstream-merged",
+      "surfaces": ["filesystem", "memory", "sqlite"],
+      "harnessTargets": ["process-tree"],
+      "futureHarnessTargets": ["memory-reindex-file-swap"],
+      "upstream": {
+        "issue": "https://github.com/openclaw/openclaw/issues/64187",
+        "pr": "https://github.com/openclaw/openclaw/pull/76024",
+        "status": "merged"
+      },
+      "geoCapabilities": [
+        "runtime-file-lock-classification",
+        "version-matrix-recommendation",
+        "evidence-ingestion"
+      ],
+      "path": "cases/openclaw-win-2026-05-02-memory-ebusy-atomic-reindex.md"
+    },
+    {
+      "caseId": "openclaw-win-2026-05-03-agent-responsiveness-no-reply",
+      "title": "Channel receives message but agent does not reply",
+      "status": "harness-diagnostic-ready",
+      "surfaces": ["channel", "agent-dispatch", "gateway", "provider-timeout"],
+      "harnessTargets": ["agent-responsiveness"],
+      "upstream": {
+        "issues": [
+          "https://github.com/openclaw/openclaw/issues/63257",
+          "https://github.com/openclaw/openclaw/issues/64253"
+        ],
+        "status": "diagnostic-only"
+      },
+      "geoCapabilities": [
+        "external-platform-delivery-diagnostics",
+        "daily-agent-health-check",
+        "task-responsiveness-evidence"
+      ],
+      "path": "cases/openclaw-win-2026-05-03-agent-responsiveness-no-reply.md"
+    },
+    {
+      "caseId": "openclaw-win-2026-05-03-process-tree-stale-gateway",
+      "title": "Stale or duplicate OpenClaw gateway process tree",
+      "status": "harness-diagnostic-ready",
+      "surfaces": ["process", "gateway", "scheduled-task", "windows-service"],
+      "harnessTargets": ["process-tree"],
+      "upstream": {
+        "issues": ["https://github.com/openclaw/openclaw/issues/64253"],
+        "status": "diagnostic-only"
+      },
+      "geoCapabilities": [
+        "runtime-process-evidence",
+        "stale-job-risk-classification",
+        "customer-safe-report-artifacts"
+      ],
+      "path": "cases/openclaw-win-2026-05-03-process-tree-stale-gateway.md"
+    }
+  ]
+}
+

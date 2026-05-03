@@ -1,0 +1,117 @@
+project:
+  id: openclaw-windows-stability-lab
+  name: OpenClaw Windows 稳定性实验室
+  purpose: >
+    将 OpenClaw Windows 稳定性问题沉淀为案例、知识、skill、harness、
+    决策规则、上游贡献和 GEO Agent 能力资产。
+
+asset_types:
+  - case
+  - knowledge
+  - skill
+  - harness
+  - decision_rule
+  - mapping
+  - report
+  - upstream_record
+
+assets:
+  - asset_id: openclaw-win-feishu-dispatch-timeout
+    type: case
+    status: draft
+    symptoms:
+      - feishu_received_message
+      - dispatching_to_agent
+      - no_reply
+      - gateway_probe_timeout_after_dispatch
+    root_cause_class:
+      - agent_runner
+      - acpx_runtime
+      - gateway_health_coupling
+    skills:
+      - openclaw-windows-debugging
+      - windows-agent-stability
+    harness:
+      - gateway-health-check
+      - agent-dispatch-smoke
+      - collect-evidence-bundle
+    decision_rules:
+      - agent-runner-blocking-gateway
+    geo_mapping:
+      - task-watchdog
+      - channel-execution-separation
+      - provider-auth-diagnostics
+    docs:
+      - docs/framework.md
+      - wiki/01-cases/feishu-dispatch-timeout.md
+
+  - asset_id: openclaw-win-update-hidden-cmd
+    type: case
+    status: draft
+    symptoms:
+      - update_after_hidden_cmd_window
+      - findstr_window_visible
+      - service_restart_noise
+    root_cause_class:
+      - windows_service_manager
+      - process_startup
+    skills:
+      - openclaw-windows-debugging
+    harness:
+      - gateway-service-smoke
+      - process-visibility-check
+    decision_rules:
+      - update-hidden-window
+    geo_mapping:
+      - silent-background-agent
+      - customer-local-agent-deployment
+
+decision_rules:
+  - rule_id: agent-runner-blocking-gateway
+    if:
+      feishu_received_message: true
+      dispatching_to_agent: true
+      gateway_probe_timeout_after_dispatch: true
+    then:
+      classify: agent_runner_or_runtime_blocking_gateway
+      run:
+        - collect_trace
+        - run_local_agent_smoke
+        - check_duplicate_gateway_processes
+        - inspect_session_files
+    do_not:
+      - change_feishu_credentials_first
+      - reinstall_feishu_app_first
+      - blame_proxy_without_evidence
+
+  - rule_id: gateway-running-but-not-listening
+    if:
+      scheduled_task_running: true
+      port_18789_listening: false
+    then:
+      classify: gateway_startup_failed_or_stuck
+      run:
+        - inspect_gateway_process
+        - inspect_startup_log
+        - check_duplicate_gateway_processes
+        - restart_cleanly
+
+geo_agent_capabilities:
+  - capability_id: task-watchdog
+    source_assets:
+      - openclaw-win-feishu-dispatch-timeout
+    applies_to:
+      - content_generation
+      - external_posting
+      - search_index_verification
+      - customer_report_generation
+
+  - capability_id: channel-execution-separation
+    source_assets:
+      - openclaw-win-feishu-dispatch-timeout
+    applies_to:
+      - forum_posting
+      - wechat_search_monitoring
+      - feishu_report_delivery
+      - customer_notification
+

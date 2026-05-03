@@ -1,0 +1,25 @@
+{
+  "name": "openclaw",
+  "displayName": "OpenClaw Gateway",
+  "description": "OpenClaw multi-channel AI gateway",
+  "expectedPort": 18789,
+  "processPattern": "openclaw",
+  "scheduledTaskName": "OpenClaw Gateway",
+  "configPaths": [
+    "%APPDATA%/.openclaw",
+    "%USERPROFILE%/.openclaw"
+  ],
+  "logPaths": [
+    "%APPDATA%/.openclaw/logs",
+    "%LOCALAPPDATA%/OpenClaw/logs"
+  ],
+  "checks": {
+    "environment": true,
+    "gatewayProcess": true,
+    "gatewayPort": true,
+    "scheduledTask": true,
+    "healthEndpoint": true,
+    "configValid": true,
+    "logEncoding": true
+  }
+}
