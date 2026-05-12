@@ -9,6 +9,7 @@
 | 编号 | 项目 | 上游对象 | 主题 | 状态 | 主记录 |
 | --- | --- | --- | --- | --- | --- |
 | OWSL-UP-2026-05-02-001 | OWSL Phase 2 | OpenClaw PR #76024 / Issue #64187 | Windows SQLite atomic reindex `EBUSY` 文件锁修复 | Merged by `steipete` | `upstream/contributions/openclaw-pr-76024.zh-CN.md` |
+| OWSL-UP-2026-05-12-001 | OWSL review assist | OpenClaw PR #59137 | memory reindex rollback cleanup review follow-up | Fix branch pushed, waiting for original author / maintainer apply | `upstream/contributions/openclaw-pr-59137-followup.zh-CN.md` |
 
 ## OWSL-UP-2026-05-02-001
 
