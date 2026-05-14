@@ -1,4 +1,4 @@
-// engine.ts — Core diagnostic and Auto-Heal logic for Guardian Agent
+// engine.ts — Core Diagnostic and Healing Logic for Guardian Agent
 
 import net from 'net';
 import { exec } from 'child_process';
@@ -6,6 +6,7 @@ import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
+// 1. Check Gateway Port
 export async function checkGatewayPort(port: number = 3001): Promise<boolean> {
   return new Promise((resolve) => {
     const client = new net.Socket();
@@ -15,67 +16,65 @@ export async function checkGatewayPort(port: number = 3001): Promise<boolean> {
       client.destroy();
       resolve(true);
     });
-    client.on('error', () => {
-      clearTimeout(timeout);
-      resolve(false);
-    });
+    client.on('error', () => resolve(false));
   });
 }
 
-export async function findStaleProcesses(port: number = 3001): Promise<Array<{ pid: number }>> {
+// 2. Find stale processes
+export async function getStalePids(port: number = 3001): Promise<number[]> {
   try {
-    // Check if port is occupied but Gateway is technically down (stale connection scenario)
-    // In Windows, we use netstat to find the PID using the port
     const { stdout } = await execAsync(`netstat -ano | findstr :${port} | findstr LISTENING`);
-    
-    // Parse netstat output: "  0.0.0.0:3001   0.0.0.0:0   LISTENING   1234"
-    const lines = stdout.trim().split('\n');
-    const pids = lines.map(line => {
-      const parts = line.trim().split(/\s+/);
-      const pid = parseInt(parts[parts.length - 1]);
-      return isNaN(pid) ? 0 : pid;
-    }).filter(pid => pid > 0);
-
-    // Unique PIDs
-    return [...new Set(pids)].map(pid => ({ pid }));
+    const pids = [...new Set(
+      stdout.split('\n').map(l => parseInt(l.trim().split(/\s+/).pop())).filter(x => !isNaN(x))
+    )] as number[];
+    return pids;
   } catch {
     return [];
   }
 }
 
-export async function killProcesses(pids: number[]): Promise<void> {
+// 3. Kill processes
+export async function killPids(pids: number[]): Promise<void> {
   for (const pid of pids) {
-    try {
-      await execAsync(`taskkill /PID ${pid} /F`);
-    } catch (e) {
-      console.warn(`[Guardian] Failed to kill PID ${pid}`);
-    }
+    try { await execAsync(`taskkill /PID ${pid} /F`); } catch {}
   }
 }
 
-export async function attemptAutoHeal(port: number = 3001): Promise<{ success: boolean; message: string }> {
-  const isConnected = await checkGatewayPort(port);
-  if (isConnected) {
-    return { success: true, message: "Gateway is already healthy. No action needed." };
+// 4. System Health Scan (Returns a report)
+export async function scanSystemHealth() {
+  const gw = await checkGatewayPort(3001);
+  const zombiePids = await getStalePids(3001);
+  
+  return {
+    gatewayStatus: gw ? 'HEALTHY' : 'DOWN',
+    zombieProcesses: zombiePids.length,
+    zombiePids: zombiePids
+  };
+}
+
+// 5. Auto Heal
+export async function autoHealGateway(): Promise<{ success: boolean, message: string }> {
+  const gw = await checkGatewayPort(3001);
+  if (gw) return { success: true, message: 'System is already healthy.' };
+
+  const pids = await getStalePids(3001);
+  if (pids.length > 0) {
+    await killPids(pids);
+    await new Promise(r => setTimeout(r, 1500)); // Wait for OS
+    const healthy = await checkGatewayPort(3001);
+    if (healthy) return { success: true, message: 'Cleared zombie processes and recovered port.' };
   }
 
-  // Phase 1: Detect zombies
-  const zombies = await findStaleProcesses(port);
-  if (zombies.length > 0) {
-    // Phase 2: Attempt Kill
-    await killProcesses(zombies.map(z => z.pid));
-    
-    // Phase 3: Verify
-    // Give OS a second to release the lock
-    await new Promise(r => setTimeout(r, 1500));
-    
-    const reConnected = await checkGatewayPort(port);
-    if (reConnected) {
-      return { success: true, message: `Found and cleared ${zombies.length} stale process(es). Gateway is responsive.` };
-    } else {
-      return { success: false, message: `Cleared stale process(es) but port is still not reachable. Gateway service might be stopped.` };
-    }
-  }
+  return { success: false, message: 'Could not reach Gateway. It might just be stopped.' };
+}
 
-  return { success: false, message: "Port is unreachable and no stale processes found. Gateway is likely just stopped." };
+// 6. Restart Gateway
+export async function restartOpenClawGateway(): Promise<void> {
+  try {
+    // In a real scenario, we might need to check if the user has admin rights to start services
+    await execAsync('openclaw gateway restart');
+    console.log('✅ OpenClaw Gateway restart command sent.');
+  } catch (e: any) {
+    console.log('⚠️ Failed to restart via CLI. Please try running: openclaw doctor --fix');
+  }
 }

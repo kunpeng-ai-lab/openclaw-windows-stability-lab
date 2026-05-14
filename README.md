@@ -79,7 +79,27 @@ openclaw-windows-stability-lab/
 
 ## Phase 3: Guardian Agent
 
-An AI-driven diagnostic agent designed to live alongside `openclaw doctor`. It wakes up when the Gateway is down or stuck, performs auto-healing, and enters interactive mode for manual troubleshooting.
+An independent diagnostic tool and Doctor TUI. **It runs even if OpenClaw Gateway is down.**
+
+### 1. Usage (Stand-Alone Mode)
+
+When OpenClaw crashes or fails to start:
+
+```powershell
+# Pull the latest repo
+git pull origin main
+
+# Run the Standalone Doctor TUI (Requires Node.js)
+cd projects\clawhub-plugin\guardian-agent
+npx tsx src\main.ts
+```
+
+### 2. The Doctor TUI Interface
+Once started, you will enter the Guardian Agent conversation loop:
+- It **Auto-Scans** your system for Gateway health and zombie processes.
+- Type **`/fix`** to let the Agent automatically kill stale processes and recover ports.
+- Type **`/restart`** to attempt restarting the Gateway service.
+- Type **`/exit`** to sleep and return control to you.
 
 ### 1. Installation (Agent Self-Install)
 
