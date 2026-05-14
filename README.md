@@ -77,6 +77,40 @@ openclaw-windows-stability-lab/
   wiki/        Human-readable knowledge base
 ```
 
+## Phase 3: Guardian Agent
+
+An AI-driven diagnostic agent designed to live alongside `openclaw doctor`. It wakes up when the Gateway is down or stuck, performs auto-healing, and enters interactive mode for manual troubleshooting.
+
+### 1. Installation (Agent Self-Install)
+
+Since OpenClaw is already running or crashed, the agent can install itself via the CLI:
+
+```powershell
+# Pull the latest repo
+git pull origin main
+
+# Copy to the OpenClaw extension directory (adjust path to your system)
+$dest = Join-Path $env:USERPROFILE ".openclaw\plugins\guardian-agent"
+Copy-Item -Recurse -Force "projects\clawhub-plugin\guardian-agent" $dest
+
+# Restart the CLI or Gateway to load the new plugin
+openclaw doctor
+```
+
+### 2. Usage
+
+#### Silent Mode (Auto-Heal Attempt)
+Use this when the machine is unstable. It tries to resolve known issues (stale processes, EBUSY locks) automatically.
+```powershell
+openclaw guardian
+```
+
+#### Interactive Mode (Deep Rescue)
+Use this when silent mode fails. It guides you through port checks, proxy validation, and manual restarts.
+```powershell
+openclaw guardian --interactive
+```
+
 ## Harness: agent-windows-reliability
 
 The main executable asset is:
