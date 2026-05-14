@@ -1,55 +1,54 @@
-// Guardian Agent - OWSL Diagnostic Plugin
+// Guardian Agent - OWSL AI SRE Expert
 // Entry point for the ClawHub plugin.
 
 import type { OpenClawPluginApi, OpenClawPluginCliRegistrar } from "@openclaw/plugin-sdk"; 
-import { getSystemStatus, checkGatewayPort, findStaleProcesses, attemptAutoHeal } from "./engine";
-import { runInteractiveSession } from "./interactive";
-
-function guardianRegistrar(registrar: OpenClawPluginCliRegistrar) {
-  registrar
-    .command('doctor')
-    .description('Run Guardian Agent deep diagnostics')
-    .option('--interactive', 'Enter interactive repair mode')
-    .action(async (opts: any) => {
-      if (opts.interactive) {
-        return runInteractiveSession();
-      }
-      // Default doctor behavior
-      console.log("🛡️ Guardian Agent Doctor Run...");
-      const status = await getSystemStatus();
-      console.log(`Gateway Status: ${status.gatewayStatus}`);
-      
-      if (status.gatewayStatus === 'DOWN') {
-        console.log("⚠️ Attempting auto-heal...");
-        const heal = await attemptAutoHeal();
-        if (heal.success) {
-          console.log(`✅ ${heal.message}`);
-        } else {
-          console.log(`❌ ${heal.message}`);
-        }
-      }
-    });
-}
+import { TOOL_SCAN_DIAGNOSTICS, TOOL_ATTEMPT_HEAL, TOOL_CHECK_LOGS } from "./tools/definitions";
 
 /**
  * Main entry function called by OpenClaw runtime.
  */
 export function activate(api: OpenClawPluginApi) {
-  api.logger.info(`[${api.id}] Guardian Agent initialized.`);
+  api.logger.info(`[${api.id}] Guardian Agent (AI SRE Expert) initialized.`);
 
-  // Register lifecycle hooks
-  api.lifecycle.registerRuntimeLifecycle({
-    async onGatewayStart() {
-      const status = await checkGatewayPort(3001);
-      if (!status) {
-        api.logger.warn(`[${api.id}] Gateway port (3001) is unreachable.`);
-      }
-    },
-    async onGatewayStop() {
-      api.logger.info(`[${api.id}] Gateway stopping.`);
-    }
-  });
+  // 1. Register the AI Tools so the default Agent (or Guardian Agent) can use them
+  api.registerTool(TOOL_SCAN_DIAGNOSTICS);
+  api.registerTool(TOOL_ATTEMPT_HEAL);
+  api.registerTool(TOOL_CHECK_LOGS);
 
-  // Register CLI command for the Guardian Agent
-  api.registerCli(guardianRegistrar);
+  // 2. Register the Emergency CLI Command
+  // This command runs the "Guardian Agent" profile, bypassing normal routing if necessary
+  const guardianRegistrar = (r: OpenClawPluginCliRegistrar) => {
+    r.command('agent') // We hook into the agent command path or create a dedicated one
+      .alias('guardian')
+      .description('Trigger Guardian Agent AI for diagnostics and repair')
+      .option('--mode <mode>', 'Operation mode: "interactive" or "silent"')
+      .action(async (args: { mode?: string }) => {
+        console.log('🤖 Guardian Agent AI: Starting up...');
+
+        if (args.mode === 'silent') {
+          console.log('🤖 Running silent diagnostic scan...');
+          const result = await TOOL_SCAN_DIAGNOSTICS.execute({ detailed: true });
+          console.log(JSON.stringify(result, null, 2));
+          
+          if (!result.gatewayReachable) {
+            console.log('\n⚠️ Auto-Heal required...');
+            const heal = await TOOL_ATTEMPT_HEAL.execute({});
+            if (heal.success) {
+              console.log(`✅ ${heal.message}`);
+            } else {
+              console.log(`❌ ${heal.message}`);
+            }
+          }
+        } else {
+          // Interactive Mode:
+          // In a full implementation, we would spin up an LLM session here.
+          // For now, we output the System Prompt instructions to the console.
+          console.log('\n🛡️ Entering Guardian Agent Interactive Diagnostic Loop...');
+          console.log('   Please provide details or wait for the AI to suggest fixes.');
+          console.log('   (Note: In this prototype, use "openclaw guardian" with the main AI)');
+        }
+      });
+  };
+
+  api.registerCli(guardianRegistrar, { parentPath: ['guardian'] });
 }
