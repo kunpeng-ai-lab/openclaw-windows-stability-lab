@@ -1,0 +1,24 @@
+{
+  "name": "@kunpeng-ai-lab/guardian-agent",
+  "version": "0.1.0-spike.1",
+  "description": "OWSL diagnostic agent for --doctor and crash recovery",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "echo 'No build step configured yet'",
+    "test": "echo 'Error: no test specified' && exit 1"
+  },
+  "keywords": [
+    "openclaw-plugin",
+    "diagnostics",
+    "windows",
+    "owsl",
+    "guardian"
+  ],
+  "author": "鲲鹏 AI 探索局 <https://kunpeng-ai.com/>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kunpeng-ai-lab/openclaw-windows-stability-lab"
+  }
+}

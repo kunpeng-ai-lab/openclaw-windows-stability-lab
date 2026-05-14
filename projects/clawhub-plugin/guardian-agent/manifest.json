@@ -1,0 +1,18 @@
+{
+  "id": "guardian-agent",
+  "name": "Guardian Agent",
+  "version": "1.0.0",
+  "description": "OWSL diagnostic agent for --doctor and crash recovery",
+  "main": "dist/index.js",
+  "openclaw": {
+    "min_version": "2026.5.0",
+    "hooks": [
+      "gateway_start",
+      "session_end"
+    ],
+    "tools": [
+      "system_diagnose",
+      "system_heal"
+    ]
+  }
+}

@@ -66,6 +66,8 @@ openclaw-windows-stability-lab/
   cases/       Reusable Windows stability cases
   docs/        Planning, review, and decision documents
   evidence/    Screenshots and evidence archives
+  guardian/    Guardian Agent - AI diagnostics (Phase 3)
+  projects/    Guardian Agent implementation (clawhub-plugin style)
   harness/     agent-windows-reliability package
   mindmaps/    Asset and diagnostic relationship maps
   reports/     Phase handoff and closure reports

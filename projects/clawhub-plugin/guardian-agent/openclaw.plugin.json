@@ -1,0 +1,18 @@
+{
+  "id": "guardian-agent",
+  "name": "Guardian Agent",
+  "activation": {
+    "onStartup": true
+  },
+  "kind": "utility",
+  "contracts": {
+    "tools": [
+      "system_diagnose"
+    ]
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  }
+}
